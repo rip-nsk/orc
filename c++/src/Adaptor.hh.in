@@ -33,6 +33,18 @@
 #include "orc/orc-config.hh"
 #include <string>
 
+#ifdef _MSC_VER
+#include <time.h>
+inline struct tm *gmtime_r(const time_t *timep, struct tm *result) {
+  return gmtime_s(result, timep) ? NULL : result;
+}
+inline char *asctime_r(const struct tm *tm, char *buf) {
+  return asctime_s(buf, 26, tm) ? NULL : buf;
+}
+typedef std::int64_t ssize_t;
+typedef unsigned uint;
+#endif
+
 #ifndef HAS_STOLL
   // A poor man's stoll that converts str to a long long int base 10
   namespace std {
@@ -41,7 +53,9 @@
 #endif
 
 #ifndef HAS_PREAD
+#ifndef _MSC_VER
   ssize_t pread(int fd, void *buf, size_t count, off_t offset);
+#endif
 #endif
 
 #ifdef INT64_IS_LL
