@@ -159,7 +159,6 @@ if (MSVC)
 ExternalProject_Add(lz4_ep
 	URL "https://github.com/lz4/lz4/archive/v1.8.1.2.zip"
 	URL_HASH MD5=9FD1C664B3111CF66CA3C8BCCE086315
-	DOWNLOAD_DIR ${DOWNLOAD_DIR}/lz4
 	SOURCE_SUBDIR "contrib/cmake_unofficial"
 	CMAKE_ARGS
 		-DCMAKE_INSTALL_PREFIX=${LZ4_PREFIX}
@@ -190,6 +189,20 @@ if (LZ4_VENDORED)
     install(FILES "${LZ4_STATIC_LIB}"
             DESTINATION "lib")
   endif ()
+endif ()
+
+# ----------------------------------------------------------------------
+# IANA - Time Zone Database
+
+if (WIN32)
+  ExternalProject_Add(tzdata_ep
+    URL "ftp://cygwin.osuosl.org/pub/cygwin/noarch/release/tzdata/tzdata-2018c-1.tar.xz"
+    URL_HASH MD5=F69FCA5C906FAFF02462D3D06F28267C
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND "")
+
+  add_dependencies (ORC tzdata_ep)
 endif ()
 
 # ----------------------------------------------------------------------

@@ -69,7 +69,13 @@ namespace orc {
     UNKNOWN_WRITER = INT32_MAX
   };
 
-  enum CompressionKind {
+#ifdef _MSC_VER
+#define ENUM_DELC_TYPE(T) : T
+#else
+#define ENUM_DELC_TYPE(T)
+#endif
+
+  enum CompressionKind ENUM_DELC_TYPE(std::int64_t) {
     CompressionKind_NONE = 0,
     CompressionKind_ZLIB = 1,
     CompressionKind_SNAPPY = 2,
@@ -84,7 +90,7 @@ namespace orc {
    */
   std::string compressionKindToString(CompressionKind kind);
 
-  enum WriterVersion {
+  enum WriterVersion ENUM_DELC_TYPE(std::int64_t) {
     WriterVersion_ORIGINAL = 0,
     WriterVersion_HIVE_8732 = 1,
     WriterVersion_HIVE_4243 = 2,

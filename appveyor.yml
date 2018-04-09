@@ -40,5 +40,5 @@ build_script:
       -DBUILD_LIBHDFSPP=OFF
       -DBUILD_TOOLS=OFF
       -DBUILD_JAVA=OFF
+  - set TZDIR=tzdata_ep-prefix/src/tzdata_ep
   - cmake --build . --config %CONFIGURATION%
-  - ctest -VV --config %CONFIGURATION%
