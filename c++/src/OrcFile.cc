@@ -24,11 +24,35 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
-#include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <unistd.h>
 #include <string.h>
+#ifndef _MSC_VER
+#include <sys/mman.h>
+#include <unistd.h>
+#else
+#include <windows.h>
+#include <io.h>
+
+#define S_IRUSR _S_IREAD
+#define S_IWUSR _S_IWRITE
+
+ssize_t pread(int fd, void *buf, size_t size, off_t offset) {
+  auto handle = (HANDLE)_get_osfhandle(fd);
+
+  OVERLAPPED ol;
+  memset(&ol, 0, sizeof(OVERLAPPED));
+  ol.Offset = offset;
+
+  DWORD rt;
+  if (!ReadFile(handle, buf, static_cast<DWORD>(size), &rt, &ol)) return -1;
+  return (ssize_t)rt;
+}
+#endif
+
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
 
 namespace orc {
 
@@ -41,7 +65,7 @@ namespace orc {
   public:
     FileInputStream(std::string _filename) {
       filename = _filename ;
-      file = open(filename.c_str(), O_RDONLY);
+      file = open(filename.c_str(), O_BINARY | O_RDONLY);
       if (file == -1) {
         throw ParseError("Can't open " + filename);
       }
@@ -121,7 +145,7 @@ namespace orc {
       closed = false;
       file = open(
                   filename.c_str(),
-                  O_CREAT | O_WRONLY | O_TRUNC,
+                  O_BINARY | O_CREAT | O_WRONLY | O_TRUNC,
                   S_IRUSR | S_IWUSR);
       if (file == -1) {
         throw ParseError("Can't open " + filename);
