@@ -201,8 +201,6 @@ if (WIN32)
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND "")
-
-  add_dependencies (ORC tzdata_ep)
 endif ()
 
 # ----------------------------------------------------------------------
