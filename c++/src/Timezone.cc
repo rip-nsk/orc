@@ -29,7 +29,12 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <time.h>
+#ifndef _MSC_VER
 #include <unistd.h>
+#else
+#include <io.h>
+#define timegm _mkgmtime
+#endif
 
 namespace orc {
 
@@ -698,7 +703,7 @@ namespace orc {
     if (itr != timezoneCache.end()) {
       return *(itr->second).get();
     }
-    int in = open(filename.c_str(), O_RDONLY);
+    int in = open(filename.c_str(), O_BINARY | O_RDONLY);
     if (in == -1) {
       std::stringstream buffer;
       buffer << "failed to open " << filename << " - " << strerror(errno);
@@ -739,7 +744,11 @@ namespace orc {
    * Get the local timezone.
    */
   const Timezone& getLocalTimezone() {
+#ifdef _MSC_VER
+    return getTimezoneByName("UTC");
+#else
     return getTimezoneByFilename(LOCAL_TIMEZONE);
+#endif
   }
 
   /**
