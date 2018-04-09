@@ -22,4 +22,8 @@
 // determine the size of an array
 #define ARRAY_SIZE(array) (sizeof(array)/sizeof(*array))
 
+#ifdef _MSC_VER
+#define bzero(ptr, len) memset(ptr, 0, len)
+#endif
+
 #endif
