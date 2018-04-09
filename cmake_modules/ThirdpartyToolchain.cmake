@@ -57,6 +57,15 @@ else ()
      set (SNAPPY_CXXFLAGS "CXXFLAGS='-DNDEBUG -O2'")
   endif ()
 
+if (MSVC)
+ExternalProject_Add(snappy_ep
+	URL "https://github.com/google/snappy/archive/1.1.7.zip"
+	URL_HASH MD5=40A371A653B7BB5A47DF59B937B78557
+	DOWNLOAD_DIR ${DOWNLOAD_DIR}/snappy
+	CMAKE_ARGS
+		-DCMAKE_INSTALL_PREFIX=${SNAPPY_PREFIX}
+		-DBUILD_SHARED_LIBS=OFF)
+else ()
   ExternalProject_Add (snappy_ep
     CONFIGURE_COMMAND "./configure" "--disable-shared" "--prefix=${SNAPPY_PREFIX}" ${SNAPPY_CXXFLAGS}
     BUILD_COMMAND ${MAKE}
@@ -68,7 +77,7 @@ else ()
     LOG_BUILD 1
     LOG_INSTALL 1
     BUILD_BYPRODUCTS "${SNAPPY_STATIC_LIB}")
-
+endif()
   set (SNAPPY_VENDORED TRUE)
 endif ()
 
@@ -101,7 +110,14 @@ else ()
                        -DCMAKE_INSTALL_PREFIX=${ZLIB_PREFIX}
                        -DCMAKE_C_FLAGS=${EP_C_FLAGS}
                        -DBUILD_SHARED_LIBS=OFF)
-
+if (MSVC)
+  set(ZLIB_STATIC_LIB_NAME zlibstaticd)
+  set(ZLIB_STATIC_LIB "${ZLIB_PREFIX}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}${ZLIB_STATIC_LIB_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  ExternalProject_Add(zlib_ep
+    URL "https://github.com/madler/zlib/archive/v1.2.11.zip"
+    URL_HASH MD5=9D6A627693163BBBF3F26403A3A0B0B1
+    CMAKE_ARGS ${ZLIB_CMAKE_ARGS})
+else ()
   ExternalProject_Add (zlib_ep
     URL ${ZLIB_SRC_URL}
     LOG_DOWNLOAD 1
@@ -110,7 +126,7 @@ else ()
     LOG_INSTALL 1
     BUILD_BYPRODUCTS "${ZLIB_STATIC_LIB}"
     CMAKE_ARGS ${ZLIB_CMAKE_ARGS})
-
+endif ()
   set (ZLIB_VENDORED TRUE)
 endif ()
 
@@ -139,7 +155,16 @@ else ()
   set (LZ4_STATIC_LIB_NAME lz4)
   set (LZ4_STATIC_LIB "${LZ4_PREFIX}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}${LZ4_STATIC_LIB_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}")
   set (LZ4_SRC_URL "https://github.com/lz4/lz4/archive/v${LZ4_VERSION}.tar.gz")
-
+if (MSVC)
+ExternalProject_Add(lz4_ep
+	URL "https://github.com/lz4/lz4/archive/v1.8.1.2.zip"
+	URL_HASH MD5=9FD1C664B3111CF66CA3C8BCCE086315
+	DOWNLOAD_DIR ${DOWNLOAD_DIR}/lz4
+	SOURCE_SUBDIR "contrib/cmake_unofficial"
+	CMAKE_ARGS
+		-DCMAKE_INSTALL_PREFIX=${LZ4_PREFIX}
+		-DBUILD_SHARED_LIBS=OFF)
+else ()
   ExternalProject_Add(lz4_ep
     CONFIGURE_COMMAND ""
     INSTALL_COMMAND make "PREFIX=${LZ4_PREFIX}" install
@@ -151,7 +176,7 @@ else ()
     LOG_INSTALL 1
     BUILD_BYPRODUCTS ${LZ4_STATIC_LIB}
     )
-
+endif()
   set (LZ4_VENDORED TRUE)
 endif ()
 
@@ -234,7 +259,22 @@ else ()
   set (PROTOC_STATIC_LIB "${PROTOBUF_PREFIX}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}protoc${CMAKE_STATIC_LIBRARY_SUFFIX}")
   set (PROTOBUF_EXECUTABLE "${PROTOBUF_PREFIX}/bin/protoc")
   set (PROTOBUF_SRC_URL "https://github.com/google/protobuf/releases/download/v${PROTOBUF_VERSION}/protobuf-${PROTOBUF_VERSION}.tar.gz")
-
+if (MSVC)
+  set(PROTOBUF_STATIC_LIB "${PROTOBUF_PREFIX}/lib/libprotobuf${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  set(PROTOC_STATIC_LIB "${PROTOBUF_PREFIX}/lib/libprotoc${CMAKE_STATIC_LIBRARY_SUFFIX}")
+ExternalProject_Add(protobuf_ep
+	URL "https://github.com/google/protobuf/archive/v3.5.1.zip"
+	URL_HASH MD5=88FE490B11B53698794724FBE6442B84
+	DOWNLOAD_DIR ${DOWNLOAD_DIR}/protobuf
+	SOURCE_SUBDIR "cmake"
+	CMAKE_ARGS
+		-DCMAKE_INSTALL_PREFIX=${PROTOBUF_PREFIX}
+		-DBUILD_SHARED_LIBS=OFF
+		-Dprotobuf_MSVC_STATIC_RUNTIME=OFF
+		-DCMAKE_STATIC_LIBRARY_PREFIX=
+		-Dprotobuf_DEBUG_POSTFIX=
+		-Dprotobuf_BUILD_TESTS=OFF)
+else ()
   ExternalProject_Add(protobuf_ep
     CONFIGURE_COMMAND "./configure" "--disable-shared" "--prefix=${PROTOBUF_PREFIX}"
     BUILD_IN_SOURCE 1
@@ -245,7 +285,7 @@ else ()
     LOG_INSTALL 1
     BUILD_BYPRODUCTS "${PROTOBUF_STATIC_LIB}" "${PROTOC_STATIC_LIB}"
     )
-
+endif()
   set (PROTOBUF_VENDORED TRUE)
 endif ()
 
