@@ -23,7 +23,6 @@ environment:
     - JOB: Visual Studio 2015
       CMAKE_GENERATOR: Visual Studio 14 2015
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      APPVEYOR_RDP_PASSWORD: 12qwas90op()OP
 
 platform:
   - x64
@@ -43,6 +42,4 @@ build_script:
       -DBUILD_JAVA=OFF
   - set TZDIR=tzdata_ep-prefix/src/tzdata_ep
   - cmake --build . --config %CONFIGURATION%
-
-on_finish:
-  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+  - ctest -VV
