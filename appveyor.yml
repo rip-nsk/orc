@@ -23,7 +23,7 @@ environment:
     - JOB: Visual Studio 2017
       CMAKE_GENERATOR: Visual Studio 15 2017
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      APPVEYOR_RDP_PASSWORD: 12qwas
+      APPVEYOR_RDP_PASSWORD: 12qwas90op()OP
 
 platform:
   - x64
