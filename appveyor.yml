@@ -40,6 +40,6 @@ build_script:
       -DBUILD_LIBHDFSPP=OFF
       -DBUILD_TOOLS=OFF
       -DBUILD_JAVA=OFF
-  - set TZDIR=tzdata_ep-prefix/src/tzdata_ep/share/zoneinfo
+  - set TZDIR=C:/projects/orc/build/tzdata_ep-prefix/src/tzdata_ep/share/zoneinfo
   - cmake --build . --config %CONFIGURATION%
   - ctest -VV -C %CONFIGURATION%
